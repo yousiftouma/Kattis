@@ -1,36 +1,34 @@
 #include <iostream>
-#include <set>
+#include <vector>
+#include <algorithm>
+
 using namespace std;
 
 int main() {
-	int N;
-	int M;
-	set<int> jacks;
+	unsigned int N;
+	unsigned int M;
 
 	while (true) {
-		int res = 0;
+		vector<unsigned int> jacks;
+		unsigned int res = 0;
 		cin >> N >> M;
 		if (N == 0 && M == 0) {
 			break;
 		}
-		int cd;
+		unsigned int cd;
 		while (N > 0) {
 			cin >> cd;
-			jacks.insert(cd);
+			jacks.push_back(cd);
 			--N;
 		}
 		while (M > 0) {
 			cin >> cd;
-			jills.insert(cd);
+			if (binary_search(jacks.begin(), jacks.end(), cd)){
+				++res;
+			}
 			--M;
 		}
-
-		for (int cd : jacks) {
-			if (jills.find(cd) != jills.end())
-				++res;
-		}
 		cout << res << endl;
-
 	}
 
 	return 0;
