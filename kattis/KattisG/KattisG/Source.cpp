@@ -5,17 +5,17 @@ using namespace std;
 
 int main()
 {
-	freopen("output.txt", "w", stdout);
+	//freopen("output.txt", "w", stdout);
 	int commands, op, operand;
-	int isQ, isS, isPq;
+	bool isQ, isS, isPq;
 	while (cin >> commands)
 	{
 		queue<int> que;
 		stack<int> stack;
 		priority_queue<int> prioQue;
-		isQ = 1;
-		isPq = 1;
-		isS = 1;
+		isQ = true;
+		isPq = true;
+		isS = true;
 		while (commands--)
 		{
 			cin >> op >> operand;
@@ -28,29 +28,28 @@ int main()
 			else
 			{
 				if(isQ) {
-					if (que.empty() || que.front() != operand) isQ = 0;
-					else que.pop();
+					if (que.empty() || que.front() != operand) isQ = false;
+					if(isQ) que.pop();
 				}
 				
 				if(isS)
 				{
-					if (stack.empty() || stack.top() != operand) isS = 0;
-					else stack.pop();
+					if (stack.empty() || stack.top() != operand) isS = false;
+					if(isS) stack.pop();
 				}
 				
 				if (isPq)
 				{
-					if (prioQue.empty() || prioQue.top() != operand) isPq = 0;
-					else prioQue.pop();
+					if (prioQue.empty() || prioQue.top() != operand) isPq = false;
+					if(isPq) prioQue.pop();
 				}	
 			}
 		}
-		auto sum = isQ + isS + isPq;
-		if (sum > 1) cout << "not sure" << endl;
-		else if (sum == 0) cout << "impossible" << endl;
-		else if (isQ == 1) cout << "queue" << endl;
-		else if (isS == 1) cout << "stack" << endl;
-		else if (isPq == 1) cout << "priority queue" << endl;
+		if (!isQ && !isS && !isPq) cout << "impossible\n";
+		else if (isQ && !isS && !isPq) cout << "queue\n";
+		else if (!isQ && isS && !isPq) cout << "stack\n";
+		else if (!isQ && !isS && isPq) cout << "priority queue\n";
+		else cout << "not sure\n";
 	}
 
 	return 0;

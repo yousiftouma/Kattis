@@ -1,121 +1,86 @@
 #include <iostream>
-#include <array>
+#include <vector>
 using namespace std;
 
-void merge(int a[], const int low, const int mid, const int high)
+vector<int> students;
+vector<int> extra; //used for merging
+long long inversions; 
+
+void merge(int start, int end, int mid)
 {
-	// Variables declaration. 
-	int * b = new int[high + 1 - low];
-	int h, i, j, k;
-	h = low;
-	i = 0;
-	j = mid + 1;
-	// Merges the two array's into b[] until the first one is finished
-	while ((h <= mid) && (j <= high))
+	auto i = start, k = start, j = mid + 1;
+
+	while (i <= mid && j <= end)
 	{
-		if (a[h] <= a[j])
+		if (students[i] < students[j])
 		{
-			b[i] = a[h];
-			h++;
-		}
-		else
+			extra[k] = students[i];
+			k++;
+			i++;
+		} else
 		{
-			b[i] = a[j];
+			extra[k] = students[j];
+			k++;
 			j++;
+			// number of inversions added is number of elements in left
+			// subarray from i to end where i is current item checked in left subarray
+			inversions += static_cast<long long>(mid) - 
+				static_cast<long long>(i) + 
+				static_cast<long long>(1);
 		}
+		
+	}
+	// merge rest of left
+	while (i <= mid)
+	{
+		extra[k] = students[i];
+		k++;
 		i++;
 	}
-	// Completes the array filling in it the missing values
-	if (h>mid)
+	// or
+	// merge rest of right
+	while (j <= end)
 	{
-		for (k = j;k <= high;k++)
-		{
-			b[i] = a[k];
-			i++;
-		}
+		extra[k] = students[j];
+		k++;
+		j++;
 	}
-	else
+
+	// copy back result to original vector
+	for (i = start; i < k; i++)
 	{
-		for (k = h;k <= mid;k++)
-		{
-			b[i] = a[k];
-			i++;
-		}
+		students[i] = extra[i];
 	}
-	// Prints into the original array
-	for (k = 0;k <= high - low;k++)
-	{
-		a[k + low] = b[k];
-	}
-	delete[] b;
 }
 
-void merge_sort(int a[], const int low, const int high)		// Recursive sort ...
+void mergeSort(int start, int end)
 {
 	int mid;
-	if (low < high)
-	{
-		mid = (low + high) / 2;
-		merge_sort(a, low, mid);
-		merge_sort(a, mid + 1, high);
-		merge(a, low, mid, high);
+	if (start < end) {
+		mid = (start + end) / 2;
+		mergeSort(start, mid);
+		mergeSort(mid + 1, end);
+		merge(start, end, mid);
 	}
 }
-
-
-int binary_srch_ret_index(int inp[], int e, int low, int high) {
-
-	if (low > high) {
-		return -1;
-	}
-
-	int mid = (low + high) / 2;
-
-	if (e == inp[mid]) {
-		return mid;
-	}
-
-	if (e < inp[mid]) {
-		return binary_srch_ret_index(inp, e, low, mid - 1);
-	}
-	else {
-		return binary_srch_ret_index(inp, e, mid + 1, high);
-	}
-}
-
-
-
 
 int main()
 {
-	auto students = new int[1000000];
-	int numberOfStudents, temp;
+	inversions = 0;
+	int numberOfStudents;
 	cin >> numberOfStudents;
-	int inversions = 0;
+	
+	students.resize(numberOfStudents);
+	extra.resize(numberOfStudents);
+
 	for (auto i = 0; i < numberOfStudents; ++i)
 	{
 		cin >> students[i];
 	}
-
-	auto unsorted = new int[1000000];
-	for (auto i = 0; i < numberOfStudents; ++i)
-	{
-		unsorted[i] = students[i];
-	}
-
-	merge_sort(students, 0, numberOfStudents);
 	
-	for (auto i = 0; i < numberOfStudents; ++i)
-	{
-		auto index = binary_srch_ret_index(students, unsorted[i], 0, numberOfStudents - i - 1);
-		inversions += index;
-		for (auto k = index; k < numberOfStudents - i; ++k)
-		{
-			students[k] = students[k + 1];
-		}
-	}
 
+	mergeSort(0, numberOfStudents - 1);
+	
 	cout << inversions << endl;
-	//delete students, unsorted;
 	return 0;
 }
